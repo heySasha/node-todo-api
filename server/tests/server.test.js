@@ -73,10 +73,10 @@ describe('GET /todos', () => {
     })
 });
 
-describe('PATCH /todos/:id', () => {
+describe('GET /todos/:id', () => {
     it('should return todo doc', done => {
         request(app)
-            .patch(`/todos/${todos[0]._id.toHexString()}`)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
             .expect(200)
             .expect(res => {
                 expect(res.body.todo.text).toBe(todos[0].text);
@@ -88,14 +88,14 @@ describe('PATCH /todos/:id', () => {
         const hexId = new ObjectID().toHexString();
 
         request(app)
-            .patch(`/todos/${hexId}`)
+            .get(`/todos/${hexId}`)
             .expect(404)
             .end(done);
     });
 
     it('should return 404 for non-object ids', done => {
         request(app)
-            .patch('/todos/12abc')
+            .get('/todos/12abc')
             .expect(404)
             .end(done);
     });

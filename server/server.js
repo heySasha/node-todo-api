@@ -32,7 +32,7 @@ app.get('/todos', (req, res) => {
     })
 });
 
-app.patch('/todos/:id', (req, res) => {
+app.get('/todos/:id', (req, res) => {
     const { id } = req.params;
 
     if (!ObjectID.isValid(id)) {
