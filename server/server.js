@@ -3,6 +3,7 @@ require('./config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
+const _ = require('lodash');
 
 const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./models/todo');
@@ -15,9 +16,8 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
-    const todo = new Todo({
-        text: req.body.text
-    });
+    const body = _.pick(req.body, ['text', 'completed', 'completedAt']);
+    const todo = new Todo(body);
 
     todo.save().then(doc => {
         res.send(doc);
@@ -72,20 +72,13 @@ app.delete('/todos/:id', (req, res) => {
 
 app.patch('/todos/:id', (req, res) => {
     const { id } = req.params;
-    const { text, completed } = req.body;
-    const body = Object.create(null);
-    if (text) {
-        body.text = text;
-    }
-    if (completed) {
-        body.completed = completed;
-    }
+    const body = _.pick(req.body, ['text', 'completed']);
 
     if(!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
 
-    if (typeof(completed) === 'boolean' && completed) {
+    if (_.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
     } else {
         body.completed = false;
@@ -106,6 +99,7 @@ app.patch('/todos/:id', (req, res) => {
         res.status(400).send();
     })
 });
+
 
 app.listen(PORT, () => {
     console.log(`Started on port ${PORT}`);
